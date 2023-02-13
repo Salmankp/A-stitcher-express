@@ -1,0 +1,17 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "google"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        "new-cap": 1,
+        "max-len": "off" // Todo disableing this rule because some var names are too long and the pipline is failing
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testMatch": ["**/test/**/*IT.js"],
+  "coveragePathIgnorePatterns": [
+    "/node_modules/"
+  ],
+  "coverageDirectory": "coverage/e2e",
+  "coverageReporters" : ["lcov", "text"]
+}

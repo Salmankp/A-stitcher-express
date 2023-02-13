@@ -1,0 +1,58 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  build:
+    name: Build, tests and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+
+      - name: npm install
+        run: |
+          cd app
+          npm install --also=dev
+
+      - id: files
+        name: get new or modified files
+        uses: jitterbit/get-changed-files@v1
+
+      - name: npm run lint in branch
+        run: |
+          FILES=`echo ${{ steps.files.outputs.added_modified }} | tr " " "\n" | cat | grep -E -i -w 'app/.*.js'| grep -v app/test | sed "s/app\///"`
+          FILES=`echo $FILES | tr '\n' ' '`
+          echo $FILES
+          cd app
+          npx eslint `echo $FILES`
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.7.0
+        with:
+          mongodb-version: 5.0
+
+      - name: npm build and tests
+        env:
+          PORT: 8001
+          MONGO_URI: mongodb://localhost:27017/test
+          NODE_ENV: DEV
+          JWT_SECRET: secretof2020
+          JWT_EXPIRY: 6h
+          JWT_REFRESH_SECRET: refreshsecretof2020
+          JWT_REFRESH_EXPIRY: 12h
+          ENVIRONMENT: dev
+        run: |
+          cd app
+          npm run dev & 
+          npm run test:e2e
